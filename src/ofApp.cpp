@@ -55,8 +55,11 @@ void ofApp::keyReleased(int key){
          if(ps->model==0)  ps->force = ofVec3f(0,-500,0);
 		else ps->force = ofVec3f(0,-1000,0);
     }
+	else if(key==49){
+		ps->initClothDistance(30,30,10);
+	}
 	else if(key==50){
-		ps->initClothDistance();
+		ps->initCubeDistance(4,4,4,10);
 	}
 }
 
