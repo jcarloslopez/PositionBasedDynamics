@@ -1,4 +1,4 @@
-#ifndef DISTANCE_CONSTRAINT_H
+#pragma once
 
 #include "ofMain.h"
 #include "Constraint.h"
@@ -12,4 +12,3 @@ class DistanceConstraint: public Constraint {
 
 		float d; // Rest distance constraint
 };
-#endif

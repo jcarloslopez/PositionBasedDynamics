@@ -1,19 +1,15 @@
 #include "ParticleSystem.h"
 
-//#define rows 30  // Num of particles in horizontal axis
-//#define cols 30  // Num of particles in vertical axis
-//#define depth 4 // Num of particles in depth axis
-//#define length 10.0f  // Rest distance between particles
 #define dt 0.1f  // Time step
 #define solverIterations 10  // Num of iterations of the solver
-#define kstretch 0.1f // Stretch stiffness
+#define kstretch 0.5f // Stretch stiffness
 #define kbend 0.8f    // Bending stiffness
 
 
 ParticleSystem::ParticleSystem(ofVec3f origin){
 
     force = ofVec3f(0,-9.8f,0); // Gravity
-	model = 0;
+	model = 2;
 	
 	switch(model){
 		case 0:
@@ -25,7 +21,7 @@ ParticleSystem::ParticleSystem(ofVec3f origin){
 			initCubeDistance(3,3,3,10);
 			break;
 		case 2:
-			initClothDistanceBending();
+			initClothDistanceBending(30,30,10);
 			break;
 		case 3:
 			initCubeVolume();
@@ -96,7 +92,28 @@ void ParticleSystem::initClothDistance(int width,int height,float length){
 	}
 }
 
-void ParticleSystem::initClothDistanceBending(){
+void ParticleSystem::initClothDistanceBending(int width,int height,float length){
+	clear();
+	model = 2;
+	for (int i = 0; i < width; i++){
+		for (int j = 0; j < height; j++){
+                Particle *p = new Particle( ofVec3f (i*length , j*length, 0 ) );
+
+				if(j > 0) constraints.push_back(new DistanceConstraint(p,particles.at((i)*width+(j-1)),kstretch,length,solverIterations));
+                if(i > 0) constraints.push_back(new DistanceConstraint(p,particles.at((i-1)*width+j),kstretch,length,solverIterations));
+				//if(j < height-2) constraints.push_back(new BendingConstraint(p,	particles.at((i)*width + (j+1)),	particles.at((i)*width + (j+2)) ,kbend,length,solverIterations));
+                particles.push_back(p);
+
+                if(j==height-1 && ((i==0) || (i==width-1))) p->fixed =true;
+		}
+	}
+	for (int i = 0; i < width; i++){
+		for (int j = 2; j < height; j++){
+			Particle *p = particles.at(i*width + j);
+			constraints.push_back(new BendingConstraint(p,	particles.at((i)*width + (j-1)),	particles.at((i)*width + (j-2)) ,kbend,length,solverIterations));
+		}
+	}
+
 
 }
 void ParticleSystem::initCubeDistance(int width,int height,int depth,float length){

@@ -1,4 +1,4 @@
-#ifndef CONSTRAINT_H
+#pragma once
 
 #include "ofMain.h"
 #include "Particle.h"
@@ -14,4 +14,3 @@ class Constraint {
 		int n; // a cardinality nj
 		string type; //a type of either equality("eq") or inequality("ineq")
 };
-#endif
