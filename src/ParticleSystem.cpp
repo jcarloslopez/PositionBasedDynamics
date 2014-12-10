@@ -1,8 +1,8 @@
 #include "ParticleSystem.h"
 
 #define dt 0.1f  // Time step
-#define solverIterations 10  // Num of iterations of the solver
-#define kstretch 0.5f // Stretch stiffness
+#define solverIterations 2  // Num of iterations of the solver
+#define kstretch 0.8f // Stretch stiffness
 #define kbend 0.8f    // Bending stiffness
 
 
@@ -23,9 +23,7 @@ ParticleSystem::ParticleSystem(ofVec3f origin){
 		case 2:
 			initClothDistanceBending(30,30,10);
 			break;
-		case 3:
-			initCubeVolume();
-			break;
+
 	}
 	
 	
@@ -39,12 +37,12 @@ void ParticleSystem::update()
 
 		//Add Forces if needed (Gravity?)
 		
-		p->applyForce(force);
+		p->applyForce(force*p->w);
 
 		p->v += dt * (p->w * p->forces);
 
 		//dampVelocities
-		p->v = p->v *0.99f;
+		p->v = p->v *0.98f;
 
 		p->p = p->x + (dt * p->v );
 
@@ -62,10 +60,10 @@ void ParticleSystem::update()
 	for (unsigned int i = 0; i < particles.size(); i++){
 		Particle *p = particles[i];
 		p->v = (p->p - p->x) / (dt);
-		if(!p->fixed)p->x = p->p;
+		p->x = p->p;
 		p->forces = ofVec3f(0);
 	}
-	if(model == 1) force = force * 0.4f; // hack to visualize better
+
 
 }
 
@@ -80,14 +78,16 @@ void ParticleSystem::initClothDistance(int width,int height,float length){
 	model = 0;
 	for (int i = 0; i < width; i++){
 		for (int j = 0; j < height; j++){
-                Particle *p = new Particle( ofVec3f (i*length , j*length, 0 ) );
+				Particle *p;
+				if(j==height-1) p = new Particle( ofVec3f (i*length , j*length, 0 ),0 );
+                else p = new Particle( ofVec3f (i*length , j*length, 0 ),10);
 
 				if(j > 0) constraints.push_back(new DistanceConstraint(p,particles.at((i)*width+(j-1)),kstretch,length,solverIterations));
                 if(i > 0) constraints.push_back(new DistanceConstraint(p,particles.at((i-1)*width+j),kstretch,length,solverIterations));
 
                 particles.push_back(p);
 
-                if(j==height-1 && ((i==0) || (i==width-1))) p->fixed =true;
+				//if(j==height-1 && ((i==0) || (i==width-1))) 
 		}
 	}
 }
@@ -97,20 +97,26 @@ void ParticleSystem::initClothDistanceBending(int width,int height,float length)
 	model = 2;
 	for (int i = 0; i < width; i++){
 		for (int j = 0; j < height; j++){
-                Particle *p = new Particle( ofVec3f (i*length , j*length, 0 ) );
+                Particle *p;
+				if(j==height-1) p = new Particle( ofVec3f (i*length , j*length, 0 ),0 );
+                else p = new Particle( ofVec3f (i*length , j*length, 0 ),10);
 
 				if(j > 0) constraints.push_back(new DistanceConstraint(p,particles.at((i)*width+(j-1)),kstretch,length,solverIterations));
                 if(i > 0) constraints.push_back(new DistanceConstraint(p,particles.at((i-1)*width+j),kstretch,length,solverIterations));
-				//if(j < height-2) constraints.push_back(new BendingConstraint(p,	particles.at((i)*width + (j+1)),	particles.at((i)*width + (j+2)) ,kbend,length,solverIterations));
                 particles.push_back(p);
 
-                if(j==height-1 && ((i==0) || (i==width-1))) p->fixed =true;
 		}
 	}
 	for (int i = 0; i < width; i++){
-		for (int j = 2; j < height; j++){
-			Particle *p = particles.at(i*width + j);
-			constraints.push_back(new BendingConstraint(p,	particles.at((i)*width + (j-1)),	particles.at((i)*width + (j-2)) ,kbend,length,solverIterations));
+		for (int j = 0; j < height-2; j++){
+			Particle *p = particles.at(j*width + i);
+			constraints.push_back(new BendingConstraint(p,	particles.at((j+1)*width + i),	particles.at((j+2)*width + i) ,kbend,length,solverIterations));
+		}
+	}
+	for (int i = 0; i < width-2; i++){
+		for (int j = 0; j < height; j++){
+			Particle *p = particles.at(j*width + i);
+			constraints.push_back(new BendingConstraint(p,	particles.at((j)*width + (i+1)),	particles.at((j)*width + (i+2)) ,kbend,length,solverIterations));
 		}
 	}
 
@@ -122,7 +128,9 @@ void ParticleSystem::initCubeDistance(int width,int height,int depth,float lengt
 	for (int i = 0; i < width; i++){
 		for (int j = 0; j < height; j++){
 		    for(int k   =  0 ;    k   <  depth;k++){
-                Particle *p = new Particle( ofVec3f (i*length , j*length ,k*length ) );
+				Particle *p;
+                if(j==height-1) p = new Particle( ofVec3f (i*length , j*length, k*length ),0 );
+                else p = new Particle( ofVec3f (i*length , j*length, k*length ),10 );
 
 				if(k > 0) constraints.push_back(new DistanceConstraint(p,particles.at(i*width*width + j*height +(k-1)),kstretch,length,solverIterations));
                 if(j > 0) constraints.push_back(new DistanceConstraint(p,particles.at(i*width*width + (j-1)*height + k ),kstretch,length,solverIterations));
@@ -136,14 +144,12 @@ void ParticleSystem::initCubeDistance(int width,int height,int depth,float lengt
 
                 particles.push_back(p);
 
-                if(j==height-1) p->fixed =true;
+               
 		    }
 		}
 	}
 }
-void ParticleSystem::initCubeVolume(){
-	
-}
+
 
 void ParticleSystem::clear(){
 	particles.clear();

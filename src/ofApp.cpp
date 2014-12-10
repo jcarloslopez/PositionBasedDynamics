@@ -61,6 +61,9 @@ void ofApp::keyReleased(int key){
 	else if(key==50){
 		ps->initCubeDistance(4,4,4,10);
 	}
+	else if(key==51){
+		ps->initClothDistanceBending(30,30,10);
+	}
 }
 
 //--------------------------------------------------------------

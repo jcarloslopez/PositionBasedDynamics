@@ -4,7 +4,7 @@
 
 class Particle {
 	public:
-		Particle(ofVec3f);
+		Particle(ofVec3f,float);
 		void applyForce(ofVec3f);
 		void draw();
 

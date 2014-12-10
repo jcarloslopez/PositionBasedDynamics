@@ -1,13 +1,21 @@
 #include "Particle.h"
 
-Particle::Particle(ofVec3f _pos){
+Particle::Particle(ofVec3f _pos,float _m){
 	x = _pos;
 	p = _pos;
 	v = ofVec3f();
-	m = 10;
-	w = 1/m;
+	if(_m <= 0){
+		m=0.00000000001f;
+		w=0.0f;
+		fixed = true;
+	}else{
+		m = _m;
+		w = 1/m;
+		fixed = false;
+	}
+	
 	forces = ofVec3f(0);
-	fixed = false;
+
 }
 
 void Particle::applyForce(ofVec3f f){

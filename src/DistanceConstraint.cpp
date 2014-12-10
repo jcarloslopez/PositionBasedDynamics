@@ -4,9 +4,7 @@
 DistanceConstraint::DistanceConstraint(Particle *_p1, Particle *_p2,float _k,float _d,int _solverIterations){
 	indices.push_back(_p1);
 	indices.push_back(_p2);
-	k = 1 - pow(1-_k,1/_solverIterations); 
-	k = pow(1-_k,_solverIterations); 
-	//k = _k;
+	k = 1.0f-pow((1.0f-_k), 1.0f/_solverIterations);
 	d = _d;
 	n = 2;
 	type = "eq";

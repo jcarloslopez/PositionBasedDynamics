@@ -15,7 +15,6 @@ class ParticleSystem {
 		void initClothDistance(int width,int height,float length); // Initialize a cloth with distance constraint      model = 0
 		void initCubeDistance(int width,int height,int depth,float length); // Initialize a cube with distance constraint      model = 1
 		void initClothDistanceBending(int width,int height,float length); // Initialize a cloth with distance and bending constraint      model = 2
-		void initCubeVolume(); // Initialize a cube with overpressure constraint      model = 3
 
 		vector<Particle*> particles;
 		vector<Constraint*> constraints;
