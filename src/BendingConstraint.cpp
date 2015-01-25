@@ -11,7 +11,7 @@ BendingConstraint::BendingConstraint(Particle *_p1, Particle *_p2,Particle* _p3,
 	h0 = rest.length();
 	W = _p1->w + _p2->w + (2*_p3->w);
 	n = 3;
-	type = "eq"; 
+	type = "ieq"; 
 
 }
 
@@ -32,5 +32,5 @@ void BendingConstraint::update(){
 	if(!indices[2]->fixed) indices[2]->p += -((4* indices[2]->w)/W)*vcev*k;
 }
 void BendingConstraint::draw(){
-	//ofTriangle(indices[0]->x.x,indices[0]->x.y,indices[0]->x.z,indices[1]->x.x,indices[1]->x.y,indices[1]->x.z,indices[2]->x.x,indices[2]->x.y,indices[2]->x.z);
+	ofTriangle(indices[0]->x.x,indices[0]->x.y,indices[0]->x.z,indices[1]->x.x,indices[1]->x.y,indices[1]->x.z,indices[2]->x.x,indices[2]->x.y,indices[2]->x.z);
 }

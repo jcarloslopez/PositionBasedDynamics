@@ -1,9 +1,10 @@
 #include "ParticleSystem.h"
 
-#define dt 0.1f  // Time step
-#define solverIterations 2  // Num of iterations of the solver
-#define kstretch 0.8f // Stretch stiffness
-#define kbend 0.8f    // Bending stiffness
+#define dt 0.2f  // Time step
+#define solverIterations 6  // Num of iterations of the solver
+#define kstretch 0.5f // Stretch stiffness
+#define kbend 0.6f    // Bending stiffness
+#define rest_distance 10 // Rest distance between points
 
 
 ParticleSystem::ParticleSystem(ofVec3f origin){
@@ -14,14 +15,15 @@ ParticleSystem::ParticleSystem(ofVec3f origin){
 	switch(model){
 		case 0:
 			//Initialize a cloth with distance constraint (width,height,rest_distance)
-			initClothDistance(30,30,10);
+			initClothDistance(30,30,rest_distance);
 			break;
 		case 1:
 			//Initialize a cube with distance constraint (width,height,depth,rest_distance)
-			initCubeDistance(3,3,3,10);
+			initCubeDistance(6,6,6,rest_distance);
 			break;
 		case 2:
-			initClothDistanceBending(30,30,10);
+			//Initialize a cloth with distance and bending constraint (width,height,rest_distance)
+			initClothDistanceBending(30,30,rest_distance);
 			break;
 
 	}
@@ -35,10 +37,10 @@ void ParticleSystem::update()
 	for (unsigned int i = 0; i < particles.size(); i++){
 		Particle *p = particles[i];
 
-		//Add Forces if needed (Gravity?)
+		//Add Forces if needed
 		
 		p->applyForce(force*p->w);
-
+		
 		p->v += dt * (p->w * p->forces);
 
 		//dampVelocities
@@ -56,7 +58,7 @@ void ParticleSystem::update()
 		}
 
 	}
-
+	
 	for (unsigned int i = 0; i < particles.size(); i++){
 		Particle *p = particles[i];
 		p->v = (p->p - p->x) / (dt);
@@ -86,19 +88,16 @@ void ParticleSystem::initClothDistance(int width,int height,float length){
                 if(i > 0) constraints.push_back(new DistanceConstraint(p,particles.at((i-1)*width+j),kstretch,length,solverIterations));
 
                 particles.push_back(p);
-
-				//if(j==height-1 && ((i==0) || (i==width-1))) 
 		}
 	}
 }
-
 void ParticleSystem::initClothDistanceBending(int width,int height,float length){
 	clear();
 	model = 2;
 	for (int i = 0; i < width; i++){
 		for (int j = 0; j < height; j++){
                 Particle *p;
-				if(j==height-1) p = new Particle( ofVec3f (i*length , j*length, 0 ),0 );
+				if(j==height-1)p = new Particle( ofVec3f (i*length , j*length, 0 ),0 );
                 else p = new Particle( ofVec3f (i*length , j*length, 0 ),10);
 
 				if(j > 0) constraints.push_back(new DistanceConstraint(p,particles.at((i)*width+(j-1)),kstretch,length,solverIterations));
@@ -150,9 +149,8 @@ void ParticleSystem::initCubeDistance(int width,int height,int depth,float lengt
 	}
 }
 
-
 void ParticleSystem::clear(){
 	particles.clear();
 	constraints.clear();
-	force = ofVec3f(0,-9.8f,0); // Gravity
+	force = ofVec3f(0,-9.8f,0); // Add Gravity
 }

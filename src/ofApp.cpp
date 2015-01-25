@@ -32,27 +32,27 @@ void ofApp::keyPressed(int key){
 void ofApp::keyReleased(int key){
     if(key==356){
         // left arrow
-		if(ps->model==0)  ps->force = ofVec3f(-500,0,0);
+		if(ps->model==0 || ps->model==2)  ps->force = ofVec3f(-100,0,0);
 		else ps->force = ofVec3f(-1000,0,0);
     }
 	else if(key==357){
         // Up arrow
-		if(ps->model==0)  ps->force = ofVec3f(0,0,-500);
+		if(ps->model==0 || ps->model==2)  ps->force = ofVec3f(0,0,-100);
 		else ps->force = ofVec3f(0,0,-1000);
     }
     else if( key==358){
         // right arrow
-		if(ps->model==0)  ps->force = ofVec3f(500,0,0);
+		if(ps->model==0 || ps->model==2)  ps->force = ofVec3f(100,0,0);
 		else ps->force = ofVec3f(1000,0,0);
     }
 	else if( key==359){
         // down arrow
-        if(ps->model==0)  ps->force = ofVec3f(0,0,500);
+        if(ps->model==0 || ps->model==2)  ps->force = ofVec3f(0,0,100);
 		else ps->force = ofVec3f(0,0,1000);
     }
 	else if(key==32){
         //Space
-         if(ps->model==0)  ps->force = ofVec3f(0,-500,0);
+         if(ps->model==0 || ps->model==2)  ps->force = ofVec3f(0,-100,0);
 		else ps->force = ofVec3f(0,-1000,0);
     }
 	else if(key==49){

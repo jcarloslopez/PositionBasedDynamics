@@ -17,6 +17,6 @@ class Particle {
 		float m;	// Mass
 		float w;	// Inverse mass
 
-		bool fixed;
+		bool fixed; //Flag for a fixed position
 };
 #endif
